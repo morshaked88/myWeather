@@ -4,12 +4,14 @@ import { useData } from '../../Store/WeatherProvider';
 
 import Loader from '../Loading/Loader';
 import Title from '../Headers/Title';
-import Input from './Input/Input';
+import Input from './Input/InputToday';
 import TodayMain from './TodayMain/TodayMain';
 import SwitchKey from '../Layout/SwitchKey';
 
 const Today = () => {
-    const { defultToday, fetchTodayDef } = useData();
+    const { defultToday } = useData();
+
+
     return (
         <Box>
             <Title title='Today Weather' />
@@ -18,7 +20,7 @@ const Today = () => {
                 <SwitchKey />
             </Switch>
             <MainBox>
-                {fetchTodayDef ?
+                {defultToday === null ?
                     <Loader />
                     :
                     <TodayMain obj={defultToday} />}

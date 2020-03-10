@@ -53,7 +53,7 @@ export default function CustomizedSwitches() {
         <FormGroup>
             <Typography component="div">
                 <Grid component="label" container alignItems="center" spacing={1}>
-                    <Grid item><Text>°C</Text></Grid>
+                    <Grid item><Text>°F</Text></Grid>
                     <Grid item>
                         <AntSwitch
                             checked={isChecked}
@@ -61,7 +61,7 @@ export default function CustomizedSwitches() {
                             value="checkedC"
                         />
                     </Grid>
-                    <Grid item><Text>°F</Text></Grid>
+                    <Grid item><Text>°C</Text></Grid>
                 </Grid>
             </Typography>
         </FormGroup>

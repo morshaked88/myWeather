@@ -6,38 +6,27 @@ const TodayMain = ({ obj }) => {
 
     const { isChecked, cityCode } = useData();
 
-    const data = { ...obj }
+    const data = { ...obj };
+    const iconImage = `/img/weather/${data.icon}.png`;
+    console.log(data)
 
-
-    console.log(isChecked)
-    console.log(cityCode)
-    const weatherIcon = `/img/weather/${data.weatherIcon}.png`;
-    const metric = `${data.metric.value}${data.metric.unit}°`;
-    const imperial = `${data.imperial.value}${data.imperial.unit}°`;
 
     return (
-        <>
-            {cityCode === undefined ?
-                <Text>
-                    Something went wrong
-        </Text>
-                :
-                <Box>
-                    <Text>Your location: {data.location}</Text>
-                    <Box>
-                        <Icon src={weatherIcon} />
-                        <Text>{data.weatherText}</Text>
-                        <Text>{
-                            !isChecked ?
-                                metric
-                                :
-                                imperial
-                        }</Text>
-                        <Text>Feasibility of rain: {data.rain ? 'Yes' : 'No'}</Text>
-                    </Box>
-                </Box>
-            }
-        </>
+        <Box>
+            <Text>Your location: {data.location}</Text>
+            <Box>
+                <Icon src={iconImage} alt='weather image' />
+                <Text>{data.weatherText}</Text>
+                <Text>Tempeture: {
+                    isChecked ?
+                        data.Temp.metric
+                        :
+                        data.Temp.imperial
+                }</Text>
+                <Text>Humidity: {data.humidity}%</Text>
+            </Box>
+        </Box>
+
 
     )
 };
@@ -57,9 +46,17 @@ margin-top: 1.8rem;
 const Text = styled.h2`
 margin-top: 1.8rem;
 font-size: 5.5vw;
+
+@media only screen and (min-width: 780px){
+    font-size: 3vw;
+}
 `;
 
 const Icon = styled.img`
 margin: 2rem 0;
-height: 10rem;
+height: 12rem;
+
+@media only screen and (min-width: 780px){
+    height: 15rem;
+}
 `;

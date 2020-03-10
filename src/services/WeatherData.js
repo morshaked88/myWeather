@@ -1,16 +1,12 @@
 
-// const key = '58GQLmP4lcGAs9iO8lhCuc1wVL3KC1x0';
-const key = 'zaH11iZCpF95FQ1w8BMuwaQsdCOHsL6v';
+const key = 'f92bb4da50acdefa40bf9503f34405c4';
 
-export const getCityKey = async (location) => {
+export const getCurrentWeater = async (location) => {
     try {
-        const res = await fetch(`http://dataservice.accuweather.com/locations/v1/cities/search?apikey=${key}&q=${location}`, { mode: 'no-cors' });
+        const res = await fetch(`http://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${key}&units=metric`);
         const data = await res.json();
-        console.log(data)
-        const cityKey = await data[0].Key;
 
-
-        return cityKey;
+        return data;
 
     } catch (err) {
         console.log(err)

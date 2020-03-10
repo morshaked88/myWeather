@@ -18,7 +18,7 @@ const WeatherProvider = ({ children }) => {
     //navbar state
     const [isOpen, setOpen] = useState(false);
     //current user location state
-    const [userLocation, setLocation] = useState('');
+    const [userLocation, setLocation] = useState(null);
     //is fetching location state
     const [fetchingLocation, setFetchLocation] = useState(true);
     // key for city api search
@@ -30,76 +30,71 @@ const WeatherProvider = ({ children }) => {
     //Switch key state
     const [isChecked, setChecked] = useState(true);
 
-
-    // const key = '58GQLmP4lcGAs9iO8lhCuc1wVL3KC1x0';
-    const key = 'zaH11iZCpF95FQ1w8BMuwaQsdCOHsL6v';
+    const key = 'afc7a83b13184c87a331ed58df016644';
 
     useEffect(() => {
         ///get user current location;
-        const geoFindMe = (position) => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(async (position) => {
-                    const latitude = position.coords.latitude;
-                    const longitude = position.coords.longitude;
+        const getPostion = async (position) => {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
 
-                    const GEOCODING = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&sensor=false&key=AIzaSyDMVZ2LfuueuUg-41nu76NzEii7AsO0FX4`);
-                    const res = await GEOCODING.json();
-                    const data = await res.plus_code.compound_code;
+            const res = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${key}`);
+            const location = await res.json();
+            const data = await location.results[0].components.town + ', ' + location.results[0].components.country;
 
-                    const newData = data.split(' ').slice(1).join(' ');
-
-                    setLocation('tel aviv, israel');
-                    setFetchLocation(false);
-                    console.log(userLocation)
-
-
-                })
-
-            } else {
-                console.log('browser not support geolocation');
-            }
+            setLocation('Tel-aviv, Israel');
+            setFetchLocation(false);
         }
 
+        const locationNotReceived = (positionError) => {
+            console.log(positionError)
+        }
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(getPostion, locationNotReceived)
+        }
+
+        //convert celcius to farenhiet
+        const convertTemp = (temp) => {
+            const result = temp * (9 / 5) + 32;
+            return result;
+        }
+
+        const currentWeather = async () => {
+
+            const data = await getWeather.getCurrentWeater(userLocation);
+            setFetchTodayDef(false);
+            console.log(data);
 
 
 
-        const getCityKey = async () => {
-            const cityCode = await getWeather.getCityKey(userLocation);
-            setCityKey(cityCode);
-            try {
-                //get city weather after getting city code
-                if (cityKey !== null) {
-                    const res = await fetch(`http://dataservice.accuweather.com/currentconditions/v1/${cityCode}?apikey=${key}`, { mode: 'no-cors' });
-                    const data = await res.json();
-                    console.log(data)
+            if (!fetchTodayDef) {
 
-                    setDefultToday({
-                        location: userLocation,
-                        weatherText: data[0].WeatherText,
-                        rain: data[0].HasPrecipitation,
-                        weatherIcon: data[0].WeatherIcon,
-                        metric: {
-                            value: data[0].Temperature.Metric.Value,
-                            unit: data[0].Temperature.Metric.Unit
-                        },
-                        imperial: {
-                            value: data[0].Temperature.Imperial.Value,
-                            unit: data[0].Temperature.Imperial.Unit
-                        }
-                    })
-                    setFetchTodayDef(false);
+                //upperCase the first letter of description
+                const newDescription = data.weather[0].description.charAt(0).toUpperCase() + data.weather[0].description.slice(1);
+
+                const dataObj = {
+                    location: userLocation,
+                    weatherText: newDescription,
+                    icon: data.weather[0].icon,
+                    Temp: {
+                        metric: `${data.main.temp}C°`,
+                        imperial: `${convertTemp(data.main.temp)}F°`
+                    },
+                    humidity: data.main.humidity,
                 }
-            } catch (err) {
-                throw new Error(err)
+                setDefultToday(dataObj)
 
             }
-
         }
 
-        geoFindMe();
-        getCityKey();
+        currentWeather();
+
+
 
     }, [fetchingLocation])
+
+    console.log(userLocation)
 
 
     const state = {
