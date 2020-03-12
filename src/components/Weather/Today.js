@@ -9,7 +9,9 @@ import TodayMain from './TodayMain/TodayMain';
 import SwitchKey from '../Layout/SwitchKey';
 
 const Today = () => {
-    const { defultToday } = useData();
+    const { defultToday, todayWeather, fetchingToday } = useData();
+
+    const weatherObj = fetchingToday ? defultToday : todayWeather;
 
 
     return (
@@ -20,10 +22,9 @@ const Today = () => {
                 <SwitchKey />
             </Switch>
             <MainBox>
-                {defultToday === null ?
-                    <Loader />
+                {defultToday === null ? <Loader />
                     :
-                    <TodayMain obj={defultToday} />}
+                    <TodayMain obj={weatherObj} />}
             </MainBox>
         </Box>
     )

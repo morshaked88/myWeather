@@ -1,32 +1,39 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { useData } from '../../../Store/WeatherProvider';
+import Error from '../../Error/Error';
 
 const TodayMain = ({ obj }) => {
 
-    const { isChecked, cityCode } = useData();
+    const { isChecked, is_error } = useData();
 
     const data = { ...obj };
     const iconImage = `/img/weather/${data.icon}.png`;
-    console.log(data)
+
+
+    const error = is_error;
 
 
     return (
         <Box>
-            <Text>Your location: {data.location}</Text>
-            <Box>
-                <Icon src={iconImage} alt='weather image' />
-                <Text>{data.weatherText}</Text>
-                <Text>Tempeture: {
-                    isChecked ?
-                        data.Temp.metric
-                        :
-                        data.Temp.imperial
-                }</Text>
-                <Text>Humidity: {data.humidity}%</Text>
-            </Box>
+            {error ? <Error text='city not found' />
+                :
+                <>
+                    <Text>Your location: {data.location}</Text>
+                    <Box>
+                        <Icon src={iconImage} alt='weather image' />
+                        <Text>{data.weatherText}</Text>
+                        <Text>Tempeture: {
+                            isChecked ?
+                                data.Temp.metric
+                                :
+                                data.Temp.imperial
+                        }</Text>
+                        <Text>Humidity: {data.humidity}%</Text>
+                    </Box>
+                </>
+            }
         </Box>
-
 
     )
 };

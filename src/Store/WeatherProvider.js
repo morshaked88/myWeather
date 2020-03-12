@@ -29,6 +29,14 @@ const WeatherProvider = ({ children }) => {
     const [fetchTodayDef, setFetchTodayDef] = useState(true);
     //Switch key state
     const [isChecked, setChecked] = useState(true);
+    //get user today search
+    const [todaySearch, setTodaySearch] = useState('');
+    //user today weather data
+    const [todayWeather, setTodayWeather] = useState(null);
+    // is fetching today weather search? 
+    const [fetchingToday, setFetchingToday] = useState(true);
+    //error?
+    const [is_error, setError] = useState(false);
 
     const key = 'afc7a83b13184c87a331ed58df016644';
 
@@ -40,9 +48,8 @@ const WeatherProvider = ({ children }) => {
 
             const res = await fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${key}`);
             const location = await res.json();
-            const data = await location.results[0].components.town + ', ' + location.results[0].components.country;
-
-            setLocation('Tel-aviv, Israel');
+            const data = location.results[0].components.residential + ', ' + location.results[0].components.country_code.toUpperCase();
+            setLocation(data);
             setFetchLocation(false);
         }
 
@@ -61,31 +68,36 @@ const WeatherProvider = ({ children }) => {
         }
 
         const currentWeather = async () => {
+            try {
 
-            const data = await getWeather.getCurrentWeater(userLocation);
-            setFetchTodayDef(false);
-            console.log(data);
+                const data = await getWeather.getCurrentWeater(userLocation);
+                setFetchTodayDef(false);
 
 
+                if (!fetchTodayDef) {
 
-            if (!fetchTodayDef) {
+                    //upperCase the first letter of description
+                    const newDescription = data.weather[0].description.charAt(0).toUpperCase() + data.weather[0].description.slice(1);
 
-                //upperCase the first letter of description
-                const newDescription = data.weather[0].description.charAt(0).toUpperCase() + data.weather[0].description.slice(1);
+                    const dataObj = {
+                        location: userLocation,
+                        weatherText: newDescription,
+                        icon: data.weather[0].icon,
+                        Temp: {
+                            metric: `${data.main.temp.toFixed(2)}C°`,
+                            imperial: `${convertTemp(data.main.temp).toFixed(2)}F°`
+                        },
+                        humidity: data.main.humidity,
+                    }
+                    setDefultToday(dataObj);
+                    setError(false);
 
-                const dataObj = {
-                    location: userLocation,
-                    weatherText: newDescription,
-                    icon: data.weather[0].icon,
-                    Temp: {
-                        metric: `${data.main.temp}C°`,
-                        imperial: `${convertTemp(data.main.temp)}F°`
-                    },
-                    humidity: data.main.humidity,
                 }
-                setDefultToday(dataObj)
 
+            } catch (err) {
+                setError(true)
             }
+
         }
 
         currentWeather();
@@ -94,8 +106,6 @@ const WeatherProvider = ({ children }) => {
 
     }, [fetchingLocation])
 
-    console.log(userLocation)
-
 
     const state = {
         isOpen,
@@ -103,14 +113,22 @@ const WeatherProvider = ({ children }) => {
         fetchingLocation,
         defultToday,
         fetchTodayDef,
-        isChecked
+        isChecked,
+        todaySearch,
+        todayWeather,
+        fetchingToday,
+        is_error,
     };
 
     const cb = {
         setOpen,
         setLocation,
         setFetchLocation,
-        setChecked
+        setChecked,
+        setTodaySearch,
+        setTodayWeather,
+        setFetchingToday,
+        setError
     };
 
     return (
