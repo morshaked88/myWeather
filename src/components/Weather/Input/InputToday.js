@@ -12,7 +12,6 @@ const InputTag = ({ holder }) => {
     const getValue = (e) => {
         e.preventDefault();
         setTodaySearch(e.target.value)
-        console.log(todaySearch)
 
     }
 

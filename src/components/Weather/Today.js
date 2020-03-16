@@ -39,7 +39,7 @@ width: 100%;
 `;
 
 const MainBox = styled.div`
-
+height: 100%;
 `;
 
 const Switch = styled.div`
